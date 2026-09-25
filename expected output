@@ -1,0 +1,8 @@
+TEST 1:
+₹10  -> PRODUCT
+
+TEST 2:
+₹5 + ₹5 -> PRODUCT
+
+TEST 3:
+₹5 + ₹10 -> PRODUCT + ₹5 CHANGE

@@ -1,0 +1,123 @@
+`timescale 1ns/1ps
+
+module tb_vending_machine;
+
+    reg clk;
+    reg reset;
+
+    reg coin_5;
+    reg coin_10;
+
+    wire product;
+    wire change_5;
+
+    // Instantiate vending machine
+    vending_machine DUT (
+        .clk(clk),
+        .reset(reset),
+
+        .coin_5(coin_5),
+        .coin_10(coin_10),
+
+        .product(product),
+        .change_5(change_5)
+    );
+
+    // 10 ns clock
+    always #5 clk = ~clk;
+
+    // Insert ₹5
+    task insert_5;
+    begin
+
+        @(negedge clk);
+
+        coin_5  = 1'b1;
+        coin_10 = 1'b0;
+
+        @(posedge clk);
+
+        #1;
+
+        coin_5 = 1'b0;
+
+        $display(
+            "Time=%0t | Inserted=₹5 | Product=%b | Change=₹5:%b",
+            $time,
+            product,
+            change_5
+        );
+
+    end
+    endtask
+
+    // Insert ₹10
+    task insert_10;
+    begin
+
+        @(negedge clk);
+
+        coin_5  = 1'b0;
+        coin_10 = 1'b1;
+
+        @(posedge clk);
+
+        #1;
+
+        coin_10 = 1'b0;
+
+        $display(
+            "Time=%0t | Inserted=₹10 | Product=%b | Change=₹5:%b",
+            $time,
+            product,
+            change_5
+        );
+
+    end
+    endtask
+
+    initial begin
+
+        $dumpfile("vending_machine.vcd");
+        $dumpvars(0, tb_vending_machine);
+
+        clk     = 1'b0;
+        reset   = 1'b1;
+        coin_5  = 1'b0;
+        coin_10 = 1'b0;
+
+        // Reset
+        #12;
+        reset = 1'b0;
+
+        // -------------------------
+        // TEST 1
+        // Insert ₹10
+        // -------------------------
+        insert_10;
+
+        #20;
+
+        // -------------------------
+        // TEST 2
+        // Insert ₹5 + ₹5
+        // -------------------------
+        insert_5;
+        insert_5;
+
+        #20;
+
+        // -------------------------
+        // TEST 3
+        // Insert ₹5 + ₹10
+        // -------------------------
+        insert_5;
+        insert_10;
+
+        #20;
+
+        $finish;
+
+    end
+
+endmodule

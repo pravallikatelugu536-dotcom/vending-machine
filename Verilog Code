@@ -1,0 +1,86 @@
+module vending_machine (
+    input  wire clk,
+    input  wire reset,
+
+    input  wire coin_5,
+    input  wire coin_10,
+
+    output reg product,
+    output reg change_5
+);
+
+    // States
+    localparam S0  = 2'b00;  // ₹0
+    localparam S5  = 2'b01;  // ₹5
+    localparam S10 = 2'b10;  // ₹10
+
+    reg [1:0] state;
+
+    always @(posedge clk or posedge reset) begin
+
+        if (reset) begin
+            state    <= S0;
+            product  <= 1'b0;
+            change_5 <= 1'b0;
+        end
+
+        else begin
+
+            // Default outputs
+            product  <= 1'b0;
+            change_5 <= 1'b0;
+
+            case (state)
+
+                // -------------------------
+                // ₹0 STATE
+                // -------------------------
+                S0: begin
+
+                    if (coin_10) begin
+                        // ₹10 inserted
+                        product <= 1'b1;
+                        state   <= S0;
+                    end
+
+                    else if (coin_5) begin
+                        // ₹5 inserted
+                        state <= S5;
+                    end
+
+                end
+
+                // -------------------------
+                // ₹5 STATE
+                // -------------------------
+                S5: begin
+
+                    if (coin_5) begin
+                        // ₹5 + ₹5 = ₹10
+                        product <= 1'b1;
+                        state   <= S0;
+                    end
+
+                    else if (coin_10) begin
+                        // ₹5 + ₹10 = ₹15
+                        product  <= 1'b1;
+                        change_5 <= 1'b1;
+                        state    <= S0;
+                    end
+
+                end
+
+                // -------------------------
+                // DEFAULT
+                // -------------------------
+                default: begin
+                    state <= S0;
+                end
+
+            endcase
+
+        end
+
+    end
+
+endmodule

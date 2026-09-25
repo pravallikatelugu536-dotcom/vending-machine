@@ -1,0 +1,79 @@
+# Vending Machine using Verilog
+
+## Description
+
+This project implements a simple vending machine using Verilog HDL.
+
+Product price:
+
+    ₹10
+
+Accepted coins:
+
+    ₹5
+    ₹10
+
+The machine keeps track of the amount inserted.
+
+## Inputs
+
+    clk       : Clock signal
+    reset     : Active-high reset
+    coin_5    : Insert ₹5 coin
+    coin_10   : Insert ₹10 coin
+
+## Outputs
+
+    product   : HIGH for one clock cycle when product is dispensed
+    change_5  : HIGH when ₹5 change is returned
+
+## States
+
+    S0  : ₹0 inserted
+    S5  : ₹5 inserted
+    S10 : Product ready / ₹10 inserted
+
+## Operation
+
+### Case 1: Insert ₹10
+
+    ₹10 inserted
+         |
+         v
+    Product dispensed
+
+### Case 2: Insert ₹5 + ₹5
+
+    ₹5 + ₹5 = ₹10
+         |
+         v
+    Product dispensed
+
+### Case 3: Insert ₹10 + ₹5
+
+    ₹10 + ₹5 = ₹15
+         |
+         v
+    Product dispensed
+    ₹5 change returned
+
+## Files
+
+    vending_machine.v
+        Main vending machine RTL.
+
+    tb_vending_machine.v
+        Testbench.
+
+    README.md
+        Project documentation.
+
+## Simulation
+
+Compile:
+
+    iverilog -o vending_tb vending_machine.v tb_vending_machine.v
+
+Run:
+
+    vvp vending_tb
